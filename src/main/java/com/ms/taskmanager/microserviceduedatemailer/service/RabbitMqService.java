@@ -18,7 +18,6 @@ public class RabbitMqService {
     }
 
     public void sendMessage(Object objectMessage) {
-                    rabbitTemplate.convertAndSend(queue.getName(), objectMessage);
-
+        rabbitTemplate.convertAndSend(queue.getName(), objectMessage);
     }
 }
