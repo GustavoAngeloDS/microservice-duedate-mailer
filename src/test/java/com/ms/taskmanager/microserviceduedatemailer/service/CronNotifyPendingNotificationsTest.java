@@ -46,7 +46,7 @@ class CronNotifyPendingNotificationsTest {
                 "AND to_char(dd.date, 'YYYY-MM-DD') = to_char(current_timestamp, 'YYYY-MM-DD') \n" +
                 "AND dd.time = to_char(current_timestamp + interval '30 minutes', 'HH24:MI')";
 
-        cronNotifyPendingNotifications.findAndNotifyNext30MinutesDueDateTasks();
+        cronNotifyPendingNotifications.findAndNotifyTasksThatWillBeOverdueOnNext30Minutes();
 
         verify(jdbcTemplate, times(1)).execute(stringArgumentCaptor1.capture());
         verify(jdbcTemplate, times(1)).query(stringArgumentCaptor2.capture(), any(RowMapper.class));

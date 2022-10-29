@@ -25,7 +25,7 @@ public class CronNotifyPendingNotifications {
     }
 
     @Scheduled(cron = "0 0/30 * * * *") // Every 30 minutes
-    public void findAndNotifyNext30MinutesDueDateTasks() {
+    public void findAndNotifyTasksThatWillBeOverdueOnNext30Minutes() {
         LOGGER.debug("Finding next 30 minutes due dates");
         jdbcTemplate.query(ConstantQueries.FIND_30MIN_PENDING_NOTIFICATIONS, (rs, rowNumber) ->
             new NotificationDto(
