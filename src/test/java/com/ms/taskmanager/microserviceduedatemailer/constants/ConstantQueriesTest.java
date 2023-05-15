@@ -15,6 +15,7 @@ class ConstantQueriesTest {
     @Test
     void validate30MinConstantQuery() {
         final String EXPECTED_STRING = "SELECT\n" +
+                "    nc.id, \n" +
                 "    u.email as emailTo,\n" +
                 "    nc.message text,\n" +
                 "    nc.title subject\n" +
@@ -29,10 +30,11 @@ class ConstantQueriesTest {
                 "        tu.user_id = u.id\n" +
                 "WHERE\n" +
                 "    dd.active = true \n" +
+                "AND nc.sent = false  \n" +
                 "AND dd.accomplished = false \n" +
                 "AND nc.notification_type =  'EMAIL' \n" +
                 "AND to_char(dd.date, 'YYYY-MM-DD') = to_char(current_timestamp, 'YYYY-MM-DD') \n" +
-                "AND dd.time = to_char(current_timestamp + interval '30 minutes', 'HH24:MI')";
+                "AND dd.time <= to_char(current_timestamp + interval '30 minutes', 'HH24:MI')";
 
         assertEquals(EXPECTED_STRING, ConstantQueries.FIND_30MIN_PENDING_NOTIFICATIONS);
     }

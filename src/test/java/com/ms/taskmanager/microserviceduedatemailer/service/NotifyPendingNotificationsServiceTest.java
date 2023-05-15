@@ -1,6 +1,5 @@
 package com.ms.taskmanager.microserviceduedatemailer.service;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -16,7 +15,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-class CronNotifyPendingNotificationsTest {
+class NotifyPendingNotificationsServiceTest {
 
     @BeforeEach
     void configureMocks() {
@@ -27,6 +26,7 @@ class CronNotifyPendingNotificationsTest {
     void checkMocksIteraction() {
         final String EXPECTED_SET = "SET TIMEZONE TO 'America/Sao_Paulo'";
         final String EXPECTED_SELECT = "SELECT\n" +
+                "    nc.id, \n" +
                 "    u.email as emailTo,\n" +
                 "    nc.message text,\n" +
                 "    nc.title subject\n" +
@@ -41,12 +41,13 @@ class CronNotifyPendingNotificationsTest {
                 "        tu.user_id = u.id\n" +
                 "WHERE\n" +
                 "    dd.active = true \n" +
+                "AND nc.sent = false  \n" +
                 "AND dd.accomplished = false \n" +
                 "AND nc.notification_type =  'EMAIL' \n" +
                 "AND to_char(dd.date, 'YYYY-MM-DD') = to_char(current_timestamp, 'YYYY-MM-DD') \n" +
-                "AND dd.time = to_char(current_timestamp + interval '30 minutes', 'HH24:MI')";
+                "AND dd.time <= to_char(current_timestamp + interval '30 minutes', 'HH24:MI')";
 
-        cronNotifyPendingNotifications.findAndNotifyTasksThatWillBeOverdueOnNext30Minutes();
+        notifyPendingNotificationsService.findAndNotifyTasksThatWillBeOverdueOnNext30Minutes();
 
         verify(jdbcTemplate, times(1)).execute(stringArgumentCaptor1.capture());
         verify(jdbcTemplate, times(1)).query(stringArgumentCaptor2.capture(), any(RowMapper.class));
@@ -59,7 +60,7 @@ class CronNotifyPendingNotificationsTest {
     JdbcTemplate jdbcTemplate;
 
     @InjectMocks
-    CronNotifyPendingNotifications cronNotifyPendingNotifications;
+    NotifyPendingNotificationsService notifyPendingNotificationsService;
 
     @Captor
     ArgumentCaptor<String> stringArgumentCaptor1;

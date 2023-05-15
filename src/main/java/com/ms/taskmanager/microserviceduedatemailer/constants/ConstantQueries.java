@@ -3,8 +3,12 @@ package com.ms.taskmanager.microserviceduedatemailer.constants;
 public final class ConstantQueries {
     public static final String SET_TIMEZONE = "SET TIMEZONE TO 'America/Sao_Paulo'";
 
+    public static final String SET_NOTIFICATION_AS_SENT = "UPDATE notification_configuration SET sent = " +
+            "true WHERE id = ?";
+
     public static final String FIND_30MIN_PENDING_NOTIFICATIONS =
             "SELECT\n" +
+            "    nc.id, \n" +
             "    u.email as emailTo,\n" +
             "    nc.message text,\n" +
             "    nc.title subject\n" +
@@ -19,10 +23,11 @@ public final class ConstantQueries {
             "        tu.user_id = u.id\n" +
             "WHERE\n" +
             "    dd.active = true \n" +
+            "AND nc.sent = false  \n" +
             "AND dd.accomplished = false \n" +
             "AND nc.notification_type =  'EMAIL' \n" +
             "AND to_char(dd.date, 'YYYY-MM-DD') = to_char(current_timestamp, 'YYYY-MM-DD') \n" +
-            "AND dd.time = to_char(current_timestamp + interval '30 minutes', 'HH24:MI')";
+            "AND dd.time <= to_char(current_timestamp + interval '30 minutes', 'HH24:MI')";
 
     private ConstantQueries() {
     }
